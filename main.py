@@ -1,19 +1,16 @@
-import pandas as pd
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, balanced_accuracy_score
-from sklearn.model_selection import StratifiedKFold, RepeatedStratifiedKFold, train_test_split, KFold
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold, RepeatedStratifiedKFold
 from sklearn.feature_selection import SelectFromModel, RFECV
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
+
 
 def make_experiment2(X_sel, dataset):
     dataset = dataset.to_numpy()
@@ -46,14 +43,6 @@ def make_experiment2(X_sel, dataset):
 
     for clf_id, clf_name in enumerate(clfs):
         print("%s: %.3f (%.2f)" % (clf_name, mean[clf_id], std[clf_id]))
-
-    col = []
-    for i in range(1, (len(X[0])+1)):
-        col.append(i)
-
-    df = pd.DataFrame(X, columns=col)
-
-    return df
 
 
 # MISSING VALUES PROBLEM SOLUTION
@@ -127,6 +116,7 @@ def select_from_model_selection(dataset):
     # Run SFM
     sfm_selector = SelectFromModel(estimator=LogisticRegression())
     sfm_selector.fit(X, y)
+    print("Selected features: ")
     print(X.columns[sfm_selector.get_support()])
 
     # Drop not selected features
@@ -141,17 +131,15 @@ if __name__ == '__main__':
 
     # Solve missing values problem
     dataset = fill_missing_values_median(dataset)
-    # X = fill_missing_values_mean(dataset)
-    # X = delete_missing_values(dataset)
-
-    # X = make_experiment2(X)
+    # dataset = fill_missing_values_mean(dataset)
+    # dataset = delete_missing_values(dataset)
 
     # Select features
     X = recursive_feature_selection(dataset)
-    # X = select_from_model_selection(X)
+    # X = select_from_model_selection(dataset)
 
     # Save result to csv
     X.to_csv('output.csv')
 
-    X = make_experiment2(X, dataset)
-
+    # Experiment
+    make_experiment2(X, dataset)
